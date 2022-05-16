@@ -2,15 +2,16 @@ package main
 
 import (
 	// "DiniSQL/MiniSQL/src/API"
-	"DiniSQL/MiniSQL/src/Interpreter/parser"
-	"DiniSQL/MiniSQL/src/Interpreter/types"
-	"DiniSQL/MiniSQL/src/Utils/Error"
+	"DiniSQL-client/Client/Interpreter/parser"
+	"DiniSQL-client/Client/Interpreter/types"
+	"DiniSQL-client/Client/Utils/Error"
 	"bufio"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
+
 	"github.com/peterh/liner"
 )
 
@@ -71,11 +72,11 @@ func runShell(r chan<- error) {
 		ll.AppendHistory(s.Text())
 	}
 
-	StatementChannel := make(chan types.DStatements, 500)  //用于传输操作指令通道
-	FinishChannel := make(chan Error.Error, 500)           //用于api执行完成反馈通道
-	SQLChannel:=make(chan string,500)
+	StatementChannel := make(chan types.DStatements, 500) //用于传输操作指令通道
+	FinishChannel := make(chan Error.Error, 500)          //用于api执行完成反馈通道
+	SQLChannel := make(chan string, 500)
 	// FlushChannel := make(chan struct{})                    //用于每条指令结束后协程flush
-	go HandleOneParse(StatementChannel, FinishChannel,SQLChannel) //begin the runtime for exec
+	go HandleOneParse(StatementChannel, FinishChannel, SQLChannel) //begin the runtime for exec
 	var beginSQLParse = false
 	var sqlText = make([]byte, 0, 100)
 	for { //each sql
@@ -118,13 +119,13 @@ func runShell(r chan<- error) {
 		}
 		beginTime := time.Now()
 		// fmt.Println(string(sqlText))
-		SQLChannel<-string(sqlText)
+		SQLChannel <- string(sqlText)
 		err = parser.Parse(strings.NewReader(string(sqlText)), StatementChannel)
 		//fmt.Println(string(sqlText))
 		if err != nil {
 			fmt.Println(err)
-			sql:=<-SQLChannel
-			sql=sql+""
+			sql := <-SQLChannel
+			sql = sql + ""
 			continue
 		}
 		<-FinishChannel //等待指令执行完成

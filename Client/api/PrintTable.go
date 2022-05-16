@@ -1,10 +1,10 @@
 package main
 
 import (
-	"DiniSQL/MiniSQL/src/Interpreter/value"
+	"DiniSQL-client/Client/Interpreter/value"
 	"os"
 	"strconv"
-	"github.com/tinylib/msgp/msgp"
+
 	"github.com/jedib0t/go-pretty/v6/table"
 )
 

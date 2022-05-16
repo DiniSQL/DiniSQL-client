@@ -2,42 +2,40 @@ package main
 
 import (
 	// "DiniSQL/MiniSQL/src/Interpreter/parser"
-	"DiniSQL/MiniSQL/src/Interpreter/types"
+	"DiniSQL-client/Client/Interpreter/types"
 	// "DiniSQL/MiniSQL/src/Interpreter/value"
 	// "DiniSQL/MiniSQL/src/Utils"
-	"DiniSQL/MiniSQL/src/Utils/Error"
+	"DiniSQL-client/Client/Utils/Error"
 	// "errors"
 	"fmt"
-	"DiniSQL/Client/type"
-	"DiniSQL/Client/clientSocket"
 	// "os"
 	// "sync"
 )
+
 // import(
 // 	"fmt"
 // )
 
-
 //HandleOneParse 用来处理parse处理完的DStatement类型  dataChannel是接收Statement的通道,整个mysql运行过程中不会关闭，但是quit后就会关闭
 //stopChannel 用来发送同步信号，每次处理完一个后就发送一个信号用来同步两协程，主协程需要接收到stopChannel的发送后才能继续下一条指令，当dataChannel
 //关闭后，stopChannel才会关闭
-func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Error.Error,sqlChannel <-chan string) {
+func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Error.Error, sqlChannel <-chan string) {
 	var err Error.Error
 	for statement := range dataChannel {
 		var sql string
-		sql=<-sqlChannel
+		sql = <-sqlChannel
 		switch statement.GetOperationType() {
 		case types.CreateDatabase:
 			fmt.Println("CreateDatabase")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.CreateDatabase
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.CreateDatabase
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
-			Socket.ConnectToRegion("10.192.182.120",8004,Packet);
+			Packet.Payload = sqlByte
+			Socket.ConnectToRegion("10.192.182.120", 8004, Packet)
 			// err = CreateDatabaseAPI(statement.(types.CreateDatabaseStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -48,28 +46,28 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 		case types.UseDatabase:
 			fmt.Println("UseDatabase")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.UseDatabase
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.UseDatabase
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = UseDatabaseAPI(statement.(types.UseDatabaseStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
 			// } else {
 			// 	fmt.Printf("now you are using database.\n")
 			// }
-		case types.CreateTable:  //M
+		case types.CreateTable: //M
 			fmt.Println("CreateTable")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.CreateTable
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.CreateTable
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = CreateTableAPI(statement.(types.CreateTableStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -77,32 +75,32 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// 	fmt.Printf("create table succes.\n")
 			// }
 
-		case types.CreateIndex:  //M
+		case types.CreateIndex: //M
 			fmt.Println("CreateIndex")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.CreateIndex
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.CreateIndex
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = CreateIndexAPI(statement.(types.CreateIndexStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
 			// } else {
 			// 	fmt.Printf("create index succes.\n")
 			// }
-		case types.DropTable:    //M
+		case types.DropTable: //M
 			fmt.Println("DropTable")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.DropTable
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.DropTable
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = DropTableAPI(statement.(types.DropTableStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -110,16 +108,16 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// 	fmt.Printf("drop table succes.\n")
 			// }
 
-		case types.DropIndex:    //M
+		case types.DropIndex: //M
 			fmt.Println("DropIndex")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.DropIndex
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.DropIndex
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = DropIndexAPI(statement.(types.DropIndexStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -127,74 +125,74 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// 	fmt.Printf("drop index succes.\n")
 			// }
 
-		case types.Insert:       //M
+		case types.Insert: //M
 			fmt.Println("Insert")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.Insert
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.Insert
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = InsertAPI(statement.(types.InsertStament))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
 			// } else {
 			// 	fmt.Printf("insert success, 1 row affected.\n")
 			// }
-		case types.Update:       //M
+		case types.Update: //M
 			fmt.Println("Update")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.Update
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.Update
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = UpdateAPI(statement.(types.UpdateStament))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
 			// } else {
 			// 	fmt.Printf("update success, %d rows are updated.\n", err.Rows)
 			// }
-		case types.Delete:       //M
+		case types.Delete: //M
 			fmt.Println("Delete")
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.Delete
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.Delete
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = DeleteAPI(statement.(types.DeleteStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
 			// } else {
 			// 	fmt.Printf("delete success, %d rows are deleted.\n", err.Rows)
 			// }
-		case types.Select:      //R或M
+		case types.Select: //R或M
 			fmt.Println("Select")
 			// statement2:=statement.(types.SelectStatement)
 			// tableNames:=statement2.TableNames
 			var Head Type.PacketHead
-			Head.P_Type=Type.Ask
-			Head.Op_Type=Type.Select
+			Head.P_Type = Type.Ask
+			Head.Op_Type = Type.Select
 			var Packet Type.Packet
-			Packet.Head=Head
+			Packet.Head = Head
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
-			Packet.Payload=sqlByte
+			Packet.Payload = sqlByte
 			// err = SelectAPI(statement.(types.SelectStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
 			// } else {
 			// 	PrintTable(statement.(types.SelectStatement).TableNames[0], err.Data[err.Rows], err.Data[0:err.Rows]) //very dirty  but I have no other choose
 			// }
-		// case types.ExecFile:
-		// 	err = ExecFileAPI(statement.(types.ExecFileStatement))
+			// case types.ExecFile:
+			// 	err = ExecFileAPI(statement.(types.ExecFileStatement))
 		}
 		//fmt.Println(err)
 		stopChannel <- err
