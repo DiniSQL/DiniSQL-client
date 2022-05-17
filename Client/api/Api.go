@@ -30,15 +30,18 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 		switch statement.GetOperationType() {
 		case types.CreateDatabase:
 			fmt.Println("CreateDatabase")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.CreateDatabase
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
-			clientSocket.ConnectToRegion("10.192.182.120", 8004, Packet)
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.CreateDatabase
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			// clientSocket.ConnectToRegion("10.192.182.120", 8004, Packet)
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateDatabase},
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = CreateDatabaseAPI(statement.(types.CreateDatabaseStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -48,14 +51,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 
 		case types.UseDatabase:
 			fmt.Println("UseDatabase")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.UseDatabase
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.UseDatabase
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.UseDatabase},
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = UseDatabaseAPI(statement.(types.UseDatabaseStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -64,13 +70,16 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// }
 		case types.CreateTable: //M
 			fmt.Println("CreateTable")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.CreateTable
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.CreateTable
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateTable},
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = CreateTableAPI(statement.(types.CreateTableStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -80,14 +89,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 
 		case types.CreateIndex: //M
 			fmt.Println("CreateIndex")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.CreateIndex
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.CreateIndex
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateIndex,
+			Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = CreateIndexAPI(statement.(types.CreateIndexStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -96,14 +108,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// }
 		case types.DropTable: //M
 			fmt.Println("DropTable")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.DropTable
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.DropTable
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.DropTable,
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = DropTableAPI(statement.(types.DropTableStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -113,14 +128,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 
 		case types.DropIndex: //M
 			fmt.Println("DropIndex")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.DropIndex
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.DropIndex
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.DropIndex,
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = DropIndexAPI(statement.(types.DropIndexStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -130,14 +148,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 
 		case types.Insert: //M
 			fmt.Println("Insert")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.Insert
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.Insert
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Insert,
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = InsertAPI(statement.(types.InsertStament))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -146,14 +167,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// }
 		case types.Update: //M
 			fmt.Println("Update")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.Update
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.Update
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Update,
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = UpdateAPI(statement.(types.UpdateStament))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -162,14 +186,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// }
 		case types.Delete: //M
 			fmt.Println("Delete")
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.Delete
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.Delete
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Delete,
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = DeleteAPI(statement.(types.DeleteStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
@@ -180,14 +207,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			fmt.Println("Select")
 			// statement2:=statement.(types.SelectStatement)
 			// tableNames:=statement2.TableNames
-			var Head Type.PacketHead
-			Head.P_Type = Type.Ask
-			Head.Op_Type = Type.Select
-			var Packet Type.Packet
-			Packet.Head = Head
-			var sqlByte []byte = []byte(sql)
-			// fmt.Println("sql:"+sql)
-			Packet.Payload = sqlByte
+			// var Head Type.PacketHead
+			// Head.P_Type = Type.Ask
+			// Head.Op_Type = Type.Select
+			// var Packet Type.Packet
+			// Packet.Head = Head
+			// var sqlByte []byte = []byte(sql)
+			// // fmt.Println("sql:"+sql)
+			// Packet.Payload = sqlByte
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Select,
+				Payload: []byte(sql)}
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, p)
 			// err = SelectAPI(statement.(types.SelectStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)
