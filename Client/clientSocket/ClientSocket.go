@@ -1,12 +1,13 @@
-package clientSocket
+package main
 
 import (
 	"DiniSQL-client/Client/Type"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	"log"
 	"net"
-	"strconv"
+	// "strconv"
+	// "strings"
 )
 
 var ch = make(chan []byte, 5)
@@ -21,7 +22,8 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 		Port: regionPort,
 	}
 	conn, err := net.DialTCP("tcp4", nil, &address)
-	// defer conn.Close()
+
+	defer conn.Close()
 	if err != nil {
 		log.Fatal(err) // Println + os.Exit(1)
 		return
@@ -42,58 +44,73 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 		conn.Close()
 		return
 	}
-	conn.Close()
-	fmt.Printf("send %d to %s\n", packet.Head.P_Type, conn.RemoteAddr())
-	// listen after send
-	recPacket = KeepListening(ClientIP, ClientPort)
+	print("listening...\n")
+	var buf = make([]byte, 1024)
+	conn.Read(buf)
+	_, err = recPacket.UnmarshalMsg(buf)
+	// res, err1 := ioutil.ReadAll(conn)
+	// res, err1 = recPacket.UnmarshalMsg(res)
+	// // ch <- p
+	// if err1 != nil {
+	// 	log.Println(err)
+	// 	conn.Close()
+	// }
+
+	fmt.Printf("p.Head.P_Type:%d\n", recPacket.Head.P_Type)
+	fmt.Printf("p.Head.Op_Type:%d\n", recPacket.Head.Op_Type)
+	fmt.Printf("p.Payload:%s\n", recPacket.Payload)
+
 	return
 
 }
 
 // listen
 // input : IP and Port of client
-func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet) {
-	fmt.Printf("listening in %s...\n", ClientIP+":"+strconv.Itoa(ClientPort))
-	listener, err := net.Listen("tcp", ":"+strconv.Itoa(ClientPort))
-	defer listener.Close()
-	if err != nil {
-		log.Fatal(err) // Println + os.Exit(1)
-	}
+// func KeepListening(conn net.Conn) (receivedPacket Type.Packet) {
+// 	fmt.Printf("listening in %s...\n", conn.LocalAddr())
+// 	ClientPort := strings.Split(conn.LocalAddr().String(),":")[1]
+// 	listener, err := net.Listen("tcp", ":"+ClientPort)
+// 	defer listener.Close()
+// 	if err != nil {
+// 		log.Fatal(err) // Println + os.Exit(1)
+// 	}
 
-	conn, err := listener.Accept()
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("remote address:", conn.RemoteAddr())
-	res, err1 := ioutil.ReadAll(conn)
-	if err1 != nil {
-		log.Println(err)
-		conn.Close()
-	}
-	res, err1 = receivedPacket.UnmarshalMsg(res)
-	// ch <- p
-	if err1 != nil {
-		log.Println(err)
-		conn.Close()
-	}
+// 	conn, err := listener.Accept()
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	fmt.Println("remote address:", conn.RemoteAddr())
+// 	res, err1 := ioutil.ReadAll(conn)
+// 	if err1 != nil {
+// 		log.Println(err)
+// 		conn.Close()
+// 	}
+	// res, err1 = receivedPacket.UnmarshalMsg(res)
+	// // ch <- p
+	// if err1 != nil {
+	// 	log.Println(err)
+	// 	conn.Close()
+	// }
 
-	fmt.Printf("p.Head.P_Type:%d\n", receivedPacket.Head.P_Type)
-	fmt.Printf("p.Head.Op_Type:%d\n", receivedPacket.Head.Op_Type)
-	fmt.Printf("p.Payload:%s\n", receivedPacket.Payload)
-	return
+	// fmt.Printf("p.Head.P_Type:%d\n", receivedPacket.Head.P_Type)
+	// fmt.Printf("p.Head.Op_Type:%d\n", receivedPacket.Head.Op_Type)
+	// fmt.Printf("p.Payload:%s\n", receivedPacket.Payload)
+// 	return
 
-}
+// }
 
 func main() {
-	var sql string
+	// var sql string
 	// go KeepListening("127.0.0.1",8006)  // test locally
-	for true {
-		fmt.Scanln(&sql)
-		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.KeepAlive, Op_Type: Type.CreateIndex},
+	// for true {
+		// fmt.Scanln(&sql)
+		// print(sql)
+		sql := "insert into student2 values(1080100001,'name1',99);"
+		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation , Op_Type: Type.Insert},
 			Payload: []byte(sql)}
 
 		ConnectToRegion("192.168.84.36", 3037, p) //RegionIP + RegionPort
-	}
+	// }
 }
 
 //client 8005 send -> listen
