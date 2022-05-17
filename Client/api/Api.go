@@ -3,6 +3,9 @@ package main
 import (
 	// "DiniSQL/MiniSQL/src/Interpreter/parser"
 	"DiniSQL-client/Client/Interpreter/types"
+	"DiniSQL-client/Client/Type"
+	"DiniSQL-client/Client/clientSocket"
+
 	// "DiniSQL/MiniSQL/src/Interpreter/value"
 	// "DiniSQL/MiniSQL/src/Utils"
 	"DiniSQL-client/Client/Utils/Error"
@@ -35,7 +38,7 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			var sqlByte []byte = []byte(sql)
 			// fmt.Println("sql:"+sql)
 			Packet.Payload = sqlByte
-			Socket.ConnectToRegion("10.192.182.120", 8004, Packet)
+			clientSocket.ConnectToRegion("10.192.182.120", 8004, Packet)
 			// err = CreateDatabaseAPI(statement.(types.CreateDatabaseStatement))
 			// if err.Status != true {
 			// 	fmt.Println(err.ErrorHint)

@@ -9,8 +9,8 @@ import __yyfmt__ "fmt"
 //line src/Interpreter/parser/spanner.go.y:3
 
 import (
-	"DiniSQL/MiniSQL/src/Interpreter/types"
-	Value "DiniSQL/MiniSQL/src/Interpreter/value"
+	"DiniSQL-client/Client/Interpreter/types"
+	Value "DiniSQL-client/Client/Interpreter/value"
 	"strconv"
 )
 

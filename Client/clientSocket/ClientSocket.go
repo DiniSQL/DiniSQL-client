@@ -1,6 +1,7 @@
-package Socket
+package clientSocket
 
 import (
+	"DiniSQL-client/Client/Type"
 	"fmt"
 	"io/ioutil"
 	"log"
