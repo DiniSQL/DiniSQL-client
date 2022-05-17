@@ -84,17 +84,17 @@ func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet)
 
 }
 
-// func main() {
-// 	var sql string
-// 	// go KeepListening("127.0.0.1",8006)  // test locally
-// 	for true {
-// 		fmt.Scanln(&sql)
-// 		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.KeepAlive, Op_Type: Type.CreateIndex},
-// 			Payload: []byte(sql)}
+func main() {
+	var sql string
+	// go KeepListening("127.0.0.1",8006)  // test locally
+	for true {
+		fmt.Scanln(&sql)
+		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.KeepAlive, Op_Type: Type.CreateIndex},
+			Payload: []byte(sql)}
 
-// 		ConnectToRegion("172.20.10.10", 9000, p) //RegionIP + RegionPort
-// 	}
-// }
+		ConnectToRegion("192.168.84.36", 3037, p) //RegionIP + RegionPort
+	}
+}
 
 //client 8005 send -> listen
 //region 8006
