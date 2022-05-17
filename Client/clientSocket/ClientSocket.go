@@ -1,4 +1,4 @@
-package Socket
+package main
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"strconv"
+	"DiniSQL-client/Client/ClientType"
 )
 
 var ch = make(chan []byte, 5)
@@ -13,7 +14,7 @@ var ClientIP = "127.0.0.1"
 var ClientPort = 8005
 
 // initial connection to region server and send message
-func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPacket Type.Packet) {
+func ConnectToRegion(regionIP string, regionPort int, packet ClientType.Packet) (recPacket ClientType.Packet) {
 
 	address := net.TCPAddr{
 		IP:   net.ParseIP(regionIP),
@@ -51,7 +52,7 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 
 // listen
 // input : IP and Port of client
-func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet) {
+func KeepListening(ClientIP string, ClientPort int) (receivedPacket ClientType.Packet) {
 	fmt.Printf("listening in %s...\n", ClientIP+":"+strconv.Itoa(ClientPort))
 	listener, err := net.Listen("tcp", ":"+strconv.Itoa(ClientPort))
 	defer listener.Close()
@@ -83,17 +84,17 @@ func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet)
 
 }
 
-// func main() {
-// 	var sql string
-// 	// go KeepListening("127.0.0.1",8006)  // test locally
-// 	for true {
-// 		fmt.Scanln(&sql)
-// 		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.KeepAlive, Op_Type: Type.CreateIndex},
-// 			Payload: []byte(sql)}
+func main() {
+	var sql string
+	// go KeepListening("127.0.0.1",8006)  // test locally
+	for true {
+		fmt.Scanln(&sql)
+		p := ClientType.Packet{Head: ClientType.PacketHead{P_Type: ClientType.KeepAlive, Op_Type: ClientType.CreateIndex},
+			Payload: []byte(sql)}
 
-// 		ConnectToRegion("172.20.10.10", 9000, p) //RegionIP + RegionPort
-// 	}
-// }
+		ConnectToRegion("192.168.84.36", 3037, p) //RegionIP + RegionPort
+	}
+}
 
 //client 8005 send -> listen
 //region 8006

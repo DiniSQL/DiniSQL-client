@@ -1,4 +1,4 @@
-package Type
+package ClientType
 
 //go:generate msgp
 
