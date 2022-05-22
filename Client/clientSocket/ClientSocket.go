@@ -52,6 +52,7 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 	print("listening...\n")
 	var buf = make([]byte, 1024)
 	conn.Read(buf)
+	print("read\n")
 	_, err = recPacket.UnmarshalMsg(buf)
 	if err != nil {
 		ret := fmt.Sprintln(err)
@@ -111,19 +112,19 @@ func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet)
 
 }
 
-func main() {
-	var sql string
-	go KeepListening("127.0.0.1", 8006) // test locally
-	for true {
-		fmt.Scanln(&sql)
-		// print(sql)
-		sql := "insert into student2 values(1080100001,'name1',99);"
-		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation, Op_Type: Type.Insert},
-			Payload: []byte(sql)}
+// func main() {
+// 	var sql string
+// 	// go KeepListening("127.0.0.1", 8006) // test locally
+// 	for true {
+// 		fmt.Scanln(&sql)
+// 		// print(sql)
+// 		sql := "insert into student2 values(1080100001,'name1',99);"
+// 		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation, Op_Type: Type.Insert},
+// 			Payload: []byte(sql)}
 
-		ConnectToRegion("192.168.84.229", 3037, p) //RegionIP + RegionPort
-	}
-}
+// 		ConnectToRegion("127.0.0.1", 8006, p) //RegionIP + RegionPort
+// 	}
+// }
 
 //client 8005 send -> listen
 //region 8006

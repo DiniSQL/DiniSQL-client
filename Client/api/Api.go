@@ -41,10 +41,10 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// 	Payload: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
 			if result.Signal == true {
 				if len(result.Payload) > 0 {
-					fmt.Println(string(result.Payload))
+					fmt.Println(string(result.Payload)[1:])
 				}
 			} else {
-				fmt.Println(string(result.Payload))
+				fmt.Println(string(result.Payload)[1:])
 			}
 
 		case types.UseDatabase:
@@ -54,10 +54,10 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
 			if result.Signal == true {
 				if len(result.Payload) > 0 {
-					fmt.Println(string(result.Payload))
+					fmt.Println(string(result.Payload)[1:])
 				}
 			} else {
-				fmt.Println(string(result.Payload))
+				fmt.Println(string(result.Payload)[1:])
 			}
 
 		case types.CreateTable:
