@@ -135,6 +135,7 @@ func runShell(r chan<- error) {
 	}
 }
 func main() {
+	newCache()
 	//errChan 用于接收shell返回的err
 	errChan := make(chan error)
 	go runShell(errChan) //开启shell协程

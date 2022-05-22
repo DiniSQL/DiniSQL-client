@@ -5,13 +5,14 @@ import (
 	"DiniSQL-client/Client/Interpreter/types"
 	"DiniSQL-client/Client/Type"
 	"DiniSQL-client/Client/clientSocket"
+	"strconv"
+	"strings"
 
 	// "DiniSQL/MiniSQL/src/Interpreter/value"
 	// "DiniSQL/MiniSQL/src/Utils"
 	"DiniSQL-client/Client/Utils/Error"
 	// "errors"
 	"fmt"
-	"strings"
 	// "os"
 	// "sync"
 )
@@ -19,8 +20,8 @@ import (
 // import(
 // 	"fmt"
 // )
-var MasterIP string = "192.168.84.13"
-var MasterPort int = 8006
+var MasterIP string = "192.168.84.48"
+var MasterPort int = 9000
 
 //HandleOneParse 用来处理parse处理完的DStatement类型  dataChannel是接收Statement的通道,整个mysql运行过程中不会关闭，但是quit后就会关闭
 //stopChannel 用来发送同步信号，每次处理完一个后就发送一个信号用来同步两协程，主协程需要接收到stopChannel的发送后才能继续下一条指令，当dataChannel
@@ -33,207 +34,173 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 		switch statement.GetOperationType() {
 		case types.CreateDatabase:
 			fmt.Println("CreateDatabase")
-			// p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateDatabase},
-			// 	Payload: []byte(sql)}
-			// result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			result := Type.Packet{Head: Type.PacketHead{P_Type: Type.Answer, Op_Type: Type.CreateDatabase}, Signal: true,
-				Payload: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
-			printMasterResult(result)
-			// err = CreateDatabaseAPI(statement.(types.CreateDatabaseStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Println("create datbase success.")
-			// }
+			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateDatabase},
+				Payload: []byte(sql)}
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			// result := Type.Packet{Head: Type.PacketHead{P_Type: Type.Answer, Op_Type: Type.CreateDatabase}, Signal: true,
+			// 	Payload: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+			} else {
+				fmt.Println(string(result.Payload))
+			}
 
 		case types.UseDatabase:
 			fmt.Println("UseDatabase")
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.UseDatabase},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+			} else {
+				fmt.Println(string(result.Payload))
+			}
 
-			// err = UseDatabaseAPI(statement.(types.UseDatabaseStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("now you are using database.\n")
-			// }
-		case types.CreateTable: //M
+		case types.CreateTable:
 			fmt.Println("CreateTable")
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.CreateTable
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// Packet.Payload = sqlByte
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateTable},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = CreateTableAPI(statement.(types.CreateTableStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("create table succes.\n")
-			// }
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			// result := Type.Packet{Head: Type.PacketHead{P_Type: Type.Answer, Op_Type: Type.CreateDatabase}, Signal: true,
+			// 	Payload: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+				IPs := strings.Split(string(result.IPResult), ";")
+				setCache(statement.(types.CreateTableStatement).TableName, IPs)
+			} else {
+				fmt.Println(string(result.Payload))
+			}
 
 		case types.CreateIndex: //M
 			fmt.Println("CreateIndex")
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.CreateIndex
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// // fmt.Println("sql:"+sql)
-			// Packet.Payload = sqlByte
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateIndex},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = CreateIndexAPI(statement.(types.CreateIndexStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("create index succes.\n")
-			// }
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+				IPs := strings.Split(string(result.IPResult), ";")
+				setCache(statement.(types.CreateIndexStatement).TableName, IPs)
+			} else {
+				fmt.Println(string(result.Payload))
+			}
+
 		case types.DropTable: //M
 			fmt.Println("DropTable")
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.DropTable
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// // fmt.Println("sql:"+sql)
-			// Packet.Payload = sqlByte
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.DropTable},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = DropTableAPI(statement.(types.DropTableStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("drop table succes.\n")
-			// }
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+					deleteKey(statement.(types.DropTableStatement).TableName)
+				}
+			} else {
+				fmt.Println(string(result.Payload))
+			}
 
 		case types.DropIndex: //M
 			fmt.Println("DropIndex")
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.DropIndex
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// // fmt.Println("sql:"+sql)
-			// Packet.Payload = sqlByte
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.DropIndex},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = DropIndexAPI(statement.(types.DropIndexStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("drop index succes.\n")
-			// }
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+				IPs := strings.Split(string(result.IPResult), ";")
+				setCache(statement.(types.DropIndexStatement).TableName, IPs)
+			} else {
+				fmt.Println(string(result.Payload))
+			}
 
 		case types.Insert: //M
 			fmt.Println("Insert")
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.Insert
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// // fmt.Println("sql:"+sql)
-			// Packet.Payload = sqlByte
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Insert},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = InsertAPI(statement.(types.InsertStament))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("insert success, 1 row affected.\n")
-			// }
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+				IPs := strings.Split(string(result.IPResult), ";")
+				setCache(statement.(types.InsertStament).TableName, IPs)
+			} else {
+				fmt.Println(string(result.Payload))
+			}
 
 		case types.Update: //M
 			fmt.Println("Update")
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.Update
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// // fmt.Println("sql:"+sql)
-			// Packet.Payload = sqlByte
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Update},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = UpdateAPI(statement.(types.UpdateStament))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("update success, %d rows are updated.\n", err.Rows)
-			// }
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+				IPs := strings.Split(string(result.IPResult), ";")
+				setCache(statement.(types.UpdateStament).TableName, IPs)
+			} else {
+				fmt.Println(string(result.Payload))
+			}
+
 		case types.Delete: //M
 			fmt.Println("Delete")
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.Delete
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// // fmt.Println("sql:"+sql)
-			// Packet.Payload = sqlByte
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Delete},
 				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = DeleteAPI(statement.(types.DeleteStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	fmt.Printf("delete success, %d rows are deleted.\n", err.Rows)
-			// }
+			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+			if result.Signal == true {
+				if len(result.Payload) > 0 {
+					fmt.Println(string(result.Payload))
+				}
+				IPs := strings.Split(string(result.IPResult), ";")
+				setCache(statement.(types.DeleteStatement).TableName, IPs)
+			} else {
+				fmt.Println(string(result.Payload))
+			}
 
 		case types.Select: //R或M
 			fmt.Println("Select")
-			// statement2:=statement.(types.SelectStatement)
-			// tableNames:=statement2.TableNames
-			// var Head Type.PacketHead
-			// Head.P_Type = Type.Ask
-			// Head.Op_Type = Type.Select
-			// var Packet Type.Packet
-			// Packet.Head = Head
-			// var sqlByte []byte = []byte(sql)
-			// // fmt.Println("sql:"+sql)
-			// Packet.Payload = sqlByte
-			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Select},
-				Payload: []byte(sql)}
-			clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			// err = SelectAPI(statement.(types.SelectStatement))
-			// if err.Status != true {
-			// 	fmt.Println(err.ErrorHint)
-			// } else {
-			// 	PrintTable(statement.(types.SelectStatement).TableNames[0], err.Data[err.Rows], err.Data[0:err.Rows]) //very dirty  but I have no other choose
-			// }
-			// case types.ExecFile:
-			// 	err = ExecFileAPI(statement.(types.ExecFileStatement))
+			tableName := statement.(types.SelectStatement).TableNames[0]
+			if getCache(tableName) == nil {
+				p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Select},
+					Payload: []byte(sql)}
+				result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
+				if result.Signal == true {
+					if len(result.Payload) > 0 {
+						fmt.Println(string(result.Payload))
+					}
+					IPs := strings.Split(string(result.IPResult), ";")
+					setCache(statement.(types.SelectStatement).TableNames[0], IPs)
+				} else {
+					fmt.Println(string(result.Payload))
+				}
+			}
+			if getCache(tableName) != nil {
+				p := Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation, Op_Type: Type.Select},
+					Payload: []byte(sql)}
+				IPAndPort := strings.Split(getCache(tableName)[0], ":")
+				IP := IPAndPort[0]
+				Port, _ := strconv.Atoi(IPAndPort[1])
+				result := clientSocket.ConnectToRegion(IP, Port, p)
+				if result.Signal == true {
+					if len(result.Payload) > 0 {
+						fmt.Println(string(result.Payload))
+					}
+				} else {
+					fmt.Println(string(result.Payload))
+				}
+			}
 		}
 		//fmt.Println(err)
 		stopChannel <- err
 	}
 	close(stopChannel)
-}
-
-func printMasterResult(result Type.Packet) {
-	if result.Signal == true {
-		if len(result.Payload) > 0 {
-			fmt.Println(string(result.Payload))
-		}
-		IPs := strings.Split(string(result.IPResult), ";")
-		fmt.Println(IPs)
-	} else {
-		fmt.Println(string(result.Payload))
-	}
 }
