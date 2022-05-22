@@ -1,8 +1,9 @@
-package main
+package clientSocket
 
 import (
 	"DiniSQL-client/Client/Type"
 	"fmt"
+
 	// "io/ioutil"
 	"log"
 	"net"
@@ -85,16 +86,16 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 // 		log.Println(err)
 // 		conn.Close()
 // 	}
-	// res, err1 = receivedPacket.UnmarshalMsg(res)
-	// // ch <- p
-	// if err1 != nil {
-	// 	log.Println(err)
-	// 	conn.Close()
-	// }
+// res, err1 = receivedPacket.UnmarshalMsg(res)
+// // ch <- p
+// if err1 != nil {
+// 	log.Println(err)
+// 	conn.Close()
+// }
 
-	// fmt.Printf("p.Head.P_Type:%d\n", receivedPacket.Head.P_Type)
-	// fmt.Printf("p.Head.Op_Type:%d\n", receivedPacket.Head.Op_Type)
-	// fmt.Printf("p.Payload:%s\n", receivedPacket.Payload)
+// fmt.Printf("p.Head.P_Type:%d\n", receivedPacket.Head.P_Type)
+// fmt.Printf("p.Head.Op_Type:%d\n", receivedPacket.Head.Op_Type)
+// fmt.Printf("p.Payload:%s\n", receivedPacket.Payload)
 // 	return
 
 // }
@@ -103,13 +104,13 @@ func main() {
 	// var sql string
 	// go KeepListening("127.0.0.1",8006)  // test locally
 	// for true {
-		// fmt.Scanln(&sql)
-		// print(sql)
-		sql := "insert into student2 values(1080100001,'name1',99);"
-		p := Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation , Op_Type: Type.Insert},
-			Payload: []byte(sql)}
+	// fmt.Scanln(&sql)
+	// print(sql)
+	sql := "insert into student2 values(1080100001,'name1',99);"
+	p := Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation, Op_Type: Type.Insert},
+		Payload: []byte(sql)}
 
-		ConnectToRegion("192.168.84.36", 3037, p) //RegionIP + RegionPort
+	ConnectToRegion("192.168.84.36", 3037, p) //RegionIP + RegionPort
 	// }
 }
 

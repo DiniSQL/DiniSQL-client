@@ -11,3 +11,10 @@ type Packet struct {
 	Head    PacketHead
 	Payload []byte
 }
+
+type MasterClientPacket struct {
+	Head      PacketHead
+	Signal    bool
+	SQLResult []byte
+	IPResult  []byte
+}
