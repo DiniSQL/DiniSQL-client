@@ -18,3 +18,4 @@ type MasterClientPacket struct {
 	SQLResult []byte
 	IPResult  []byte
 }
+
