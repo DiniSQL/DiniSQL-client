@@ -36,8 +36,8 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateDatabase},
 			// 	Payload: []byte(sql)}
 			// result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-			result := Type.MasterClientPacket{Head: Type.PacketHead{P_Type: Type.Answer, Op_Type: Type.CreateDatabase}, Signal: true,
-				SQLResult: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
+			result := Type.Packet{Head: Type.PacketHead{P_Type: Type.Answer, Op_Type: Type.CreateDatabase}, Signal: true,
+				Payload: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
 			printMasterResult(result)
 			// err = CreateDatabaseAPI(statement.(types.CreateDatabaseStatement))
 			// if err.Status != true {
@@ -226,14 +226,14 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 	close(stopChannel)
 }
 
-func printMasterResult(result Type.MasterClientPacket) {
+func printMasterResult(result Type.Packet) {
 	if result.Signal == true {
-		if len(result.SQLResult) > 0 {
-			fmt.Println(string(result.SQLResult))
+		if len(result.Payload) > 0 {
+			fmt.Println(string(result.Payload))
 		}
 		IPs := strings.Split(string(result.IPResult), ";")
 		fmt.Println(IPs)
 	} else {
-		fmt.Println(string(result.SQLResult))
+		fmt.Println(string(result.Payload))
 	}
 }

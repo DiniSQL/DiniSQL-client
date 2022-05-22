@@ -5,17 +5,12 @@ package Type
 type PacketHead struct {
 	P_Type  int
 	Op_Type int
+	Spare   string
 }
 
 type Packet struct {
-	Head    PacketHead
-	Payload []byte
+	Head     PacketHead
+	Signal   bool
+	Payload  []byte
+	IPResult []byte
 }
-
-type MasterClientPacket struct {
-	Head      PacketHead
-	Signal    bool
-	SQLResult []byte
-	IPResult  []byte
-}
-
