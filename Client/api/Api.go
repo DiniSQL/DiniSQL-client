@@ -5,6 +5,7 @@ import (
 	"DiniSQL-client/Client/Interpreter/types"
 	"DiniSQL-client/Client/Type"
 	"DiniSQL-client/Client/clientSocket"
+	"log"
 	"strconv"
 	"strings"
 
@@ -20,7 +21,7 @@ import (
 // import(
 // 	"fmt"
 // )
-var MasterIP string = "192.168.84.48"
+var MasterIP string = "172.20.10.2"
 var MasterPort int = 9000
 
 //HandleOneParse 用来处理parse处理完的DStatement类型  dataChannel是接收Statement的通道,整个mysql运行过程中不会关闭，但是quit后就会关闭
@@ -41,10 +42,10 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			// 	Payload: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
 			if result.Signal == true {
 				if len(result.Payload) > 0 {
-					fmt.Println(string(result.Payload)[1:])
+					fmt.Println(string(result.Payload))
 				}
 			} else {
-				fmt.Println(string(result.Payload)[1:])
+				fmt.Println(string(result.Payload))
 			}
 
 		case types.UseDatabase:
@@ -54,16 +55,17 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
 			if result.Signal == true {
 				if len(result.Payload) > 0 {
-					fmt.Println(string(result.Payload)[1:])
+					fmt.Println(string(result.Payload))
 				}
 			} else {
-				fmt.Println(string(result.Payload)[1:])
+				fmt.Println(string(result.Payload))
 			}
 
 		case types.CreateTable:
 			fmt.Println("CreateTable")
 			p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.CreateTable},
 				Payload: []byte(sql)}
+			fmt.Println(sql)
 			result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
 			// result := Type.Packet{Head: Type.PacketHead{P_Type: Type.Answer, Op_Type: Type.CreateDatabase}, Signal: true,
 			// 	Payload: []byte("Successhhh"), IPResult: []byte("10.1.1.2:2020;10.2.2.1:1000")}
@@ -72,9 +74,11 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 					fmt.Println(string(result.Payload))
 				}
 				IPs := strings.Split(string(result.IPResult), ";")
+				// fmt.Println(IPs)
 				setCache(statement.(types.CreateTableStatement).TableName, IPs)
 			} else {
 				fmt.Println(string(result.Payload))
+				// fmt.Println(string(result.IPResult))
 			}
 
 		case types.CreateIndex: //M
@@ -172,24 +176,29 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 			if getCache(tableName) == nil {
 				p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Select},
 					Payload: []byte(sql)}
-				result := clientSocket.ConnectToRegion(MasterIP, MasterPort, p)
-				if result.Signal == true {
-					if len(result.Payload) > 0 {
-						fmt.Println(string(result.Payload))
-					}
-					IPs := strings.Split(string(result.IPResult), ";")
-					setCache(statement.(types.SelectStatement).TableNames[0], IPs)
-				} else {
-					fmt.Println(string(result.Payload))
-				}
+				getRegionsIP(p, tableName)
 			}
 			if getCache(tableName) != nil {
 				p := Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation, Op_Type: Type.Select},
 					Payload: []byte(sql)}
 				IPAndPort := strings.Split(getCache(tableName)[0], ":")
 				IP := IPAndPort[0]
-				Port, _ := strconv.Atoi(IPAndPort[1])
+				Port, err := strconv.Atoi(IPAndPort[1])
+				if err != nil {
+					log.Fatal(err)
+				}
 				result := clientSocket.ConnectToRegion(IP, Port, p)
+				if result.Head.Op_Type == -1 {
+					p := Type.Packet{Head: Type.PacketHead{P_Type: Type.Ask, Op_Type: Type.Select},
+						Payload: []byte(sql)}
+					getRegionsIP(p, tableName)
+					p = Type.Packet{Head: Type.PacketHead{P_Type: Type.SQLOperation, Op_Type: Type.Select},
+						Payload: []byte(sql)}
+					IPAndPort := strings.Split(getCache(tableName)[0], ":")
+					IP := IPAndPort[0]
+					Port, _ := strconv.Atoi(IPAndPort[1])
+					result = clientSocket.ConnectToRegion(IP, Port, p)
+				}
 				if result.Signal == true {
 					if len(result.Payload) > 0 {
 						fmt.Println(string(result.Payload))
@@ -203,4 +212,16 @@ func HandleOneParse(dataChannel <-chan types.DStatements, stopChannel chan<- Err
 		stopChannel <- err
 	}
 	close(stopChannel)
+}
+func getRegionsIP(packet Type.Packet, tableName string) {
+	result := clientSocket.ConnectToRegion(MasterIP, MasterPort, packet)
+	if result.Signal == true {
+		if len(result.Payload) > 0 {
+			fmt.Println(string(result.Payload))
+		}
+		IPs := strings.Split(string(result.IPResult), ";")
+		setCache(tableName, IPs)
+	} else {
+		fmt.Println(string(result.Payload))
+	}
 }

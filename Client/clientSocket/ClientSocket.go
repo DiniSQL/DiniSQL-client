@@ -16,13 +16,13 @@ var ClientPort = 8005
 
 // initial connection to region server and send message
 func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPacket Type.Packet) {
-
+	fmt.Println("Entering")
 	address := net.TCPAddr{
 		IP:   net.ParseIP(regionIP),
 		Port: regionPort,
 	}
 	conn, err := net.DialTCP("tcp4", nil, &address)
-
+	print("dial...\n")
 	defer conn.Close()
 	if err != nil {
 		ret := fmt.Sprintln(err)
@@ -31,9 +31,9 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 		return recPacket
 	}
 	var packetBuf = make([]byte, 0)
-	fmt.Printf("packet.Head.P_Type:%d\n", packet.Head.P_Type)
-	fmt.Printf("packet.Head.Op_Type:%d\n", packet.Head.Op_Type)
-	fmt.Printf("packet.Payload:%s\n", packet.Payload)
+	// fmt.Printf("packet.Head.P_Type:%d\n", packet.Head.P_Type)
+	// fmt.Printf("packet.Head.Op_Type:%d\n", packet.Head.Op_Type)
+	// fmt.Printf("packet.Payload:%s\n", packet.Payload)
 	packetBuf, err = packet.MarshalMsg(packetBuf)
 	if err != nil {
 		ret := fmt.Sprintln(err)
@@ -42,7 +42,7 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 		return recPacket
 	}
 	_, err = conn.Write(packetBuf)
-	fmt.Println(packetBuf)
+	// fmt.Println(packetBuf)
 	if err != nil {
 		ret := fmt.Sprintln(err)
 		recPacket = Type.Packet{Head: Type.PacketHead{P_Type: Type.Result, Op_Type: -1},
@@ -61,9 +61,9 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 		return recPacket
 	}
 
-	fmt.Printf("p.Head.P_Type:%d\n", recPacket.Head.P_Type)
-	fmt.Printf("p.Head.Op_Type:%d\n", recPacket.Head.Op_Type)
-	fmt.Printf("p.Payload:%s\n", recPacket.Payload)
+	// fmt.Printf("p.Head.P_Type:%d\n", recPacket.Head.P_Type)
+	// fmt.Printf("p.Head.Op_Type:%d\n", recPacket.Head.Op_Type)
+	// fmt.Printf("p.Payload:%s\n", recPacket.Payload)
 
 	return recPacket
 
@@ -72,7 +72,7 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 // listen
 // input : IP and Port of client
 func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet) {
-	fmt.Printf("listening in %s...\n", ClientIP)
+	// fmt.Printf("listening in %s...\n", ClientIP)
 	// ClientPort := strings.Split(conn.LocalAddr().String(),":")[1]
 	listener, err := net.Listen("tcp", ":"+strconv.Itoa(ClientPort))
 	defer listener.Close()
@@ -87,7 +87,7 @@ func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println("remote address:", conn.RemoteAddr())
+	// fmt.Println("remote address:", conn.RemoteAddr())
 	res, err := ioutil.ReadAll(conn)
 	if err != nil {
 		ret := fmt.Sprintln(err)
@@ -104,9 +104,9 @@ func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet)
 		return receivedPacket
 	}
 
-	fmt.Printf("p.Head.P_Type:%d\n", receivedPacket.Head.P_Type)
-	fmt.Printf("p.Head.Op_Type:%d\n", receivedPacket.Head.Op_Type)
-	fmt.Printf("p.Payload:%s\n", receivedPacket.Payload)
+	// fmt.Printf("p.Head.P_Type:%d\n", receivedPacket.Head.P_Type)
+	// fmt.Printf("p.Head.Op_Type:%d\n", receivedPacket.Head.Op_Type)
+	// fmt.Printf("p.Payload:%s\n", receivedPacket.Payload)
 	// }
 	return receivedPacket
 
