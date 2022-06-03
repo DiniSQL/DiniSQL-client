@@ -16,8 +16,6 @@ import (
 )
 
 const historyCommmandFile = "~/.minisql_history"
-const firstPrompt = "minisql>"
-const secondPrompt = "      ->"
 
 func expandPath(path string) (string, error) {
 	if strings.HasPrefix(path, "~/") {
@@ -87,9 +85,9 @@ func runShell(r chan<- error) {
 		var err error
 		for { //each line
 			if beginSQLParse {
-				input, err = ll.Prompt(secondPrompt)
+				input, err = ll.Prompt("      -> ")
 			} else {
-				input, err = ll.Prompt(firstPrompt)
+				input, err = ll.Prompt("DiniSQL> ")
 			}
 			if err != nil {
 				if err == liner.ErrPromptAborted {
@@ -135,6 +133,18 @@ func runShell(r chan<- error) {
 	}
 }
 func main() {
+	fmt.Println()
+	fmt.Println("_|_|_|    _|            _|    _|_|_|    _|_|      _|")
+	fmt.Println("_|    _|      _|_|_|        _|        _|    _|    _|")
+	fmt.Println("_|    _|      _|_|_|        _|        _|    _|    _|")
+	fmt.Println("_|    _|  _|  _|    _|  _|    _|_|    _|  _|_|    _|")
+	fmt.Println("_|    _|  _|  _|    _|  _|        _|  _|    _|    _|")
+	fmt.Println("_|_|_|    _|  _|    _|  _|  _|_|_|      _|_|  _|  _|_|_|_|")
+	fmt.Println()
+	fmt.Println("Welcome to the DiniSQL monitor, a compact distributed SQL engine. Commands end with ;.")
+	fmt.Println("Copyright (c) 2022, 2022, Ou Yixin, Fan Zhaoyu, Zheng Bowen, Liu Shuhan and Xiang Kerong.")
+	fmt.Println()
+
 	newCache()
 	errChan := make(chan error)
 	go runShell(errChan) //开启shell协程
