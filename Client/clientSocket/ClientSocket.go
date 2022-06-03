@@ -4,7 +4,6 @@ import (
 	"DiniSQL-client/Client/Type"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net"
 	"strconv"
 	// "strings"
@@ -16,20 +15,22 @@ var ClientPort = 8005
 
 // initial connection to region server and send message
 func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPacket Type.Packet) {
-	fmt.Println("Entering")
+	// fmt.Println("Entering")
 	address := net.TCPAddr{
 		IP:   net.ParseIP(regionIP),
 		Port: regionPort,
 	}
 	conn, err := net.DialTCP("tcp4", nil, &address)
-	print("dial...\n")
-	defer conn.Close()
+	// print("dial...\n")
+
 	if err != nil {
 		ret := fmt.Sprintln(err)
 		recPacket = Type.Packet{Head: Type.PacketHead{P_Type: Type.Result, Op_Type: -1},
 			Payload: []byte(ret)}
 		return recPacket
 	}
+	defer conn.Close()
+	// print("dial1...\n")
 	var packetBuf = make([]byte, 0)
 	// fmt.Printf("packet.Head.P_Type:%d\n", packet.Head.P_Type)
 	// fmt.Printf("packet.Head.Op_Type:%d\n", packet.Head.Op_Type)
@@ -41,6 +42,7 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 			Payload: []byte(ret)}
 		return recPacket
 	}
+	// print("dial2...\n")
 	_, err = conn.Write(packetBuf)
 	// fmt.Println(packetBuf)
 	if err != nil {
@@ -49,10 +51,11 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 			Payload: []byte(ret)}
 		return recPacket
 	}
-	print("listening...\n")
+	// print("dial3...\n")
+	// print("listening...\n")
 	var buf = make([]byte, 1024)
 	conn.Read(buf)
-	print("read\n")
+	// print("read\n")
 	_, err = recPacket.UnmarshalMsg(buf)
 	if err != nil {
 		ret := fmt.Sprintln(err)
@@ -64,7 +67,8 @@ func ConnectToRegion(regionIP string, regionPort int, packet Type.Packet) (recPa
 	// fmt.Printf("p.Head.P_Type:%d\n", recPacket.Head.P_Type)
 	// fmt.Printf("p.Head.Op_Type:%d\n", recPacket.Head.Op_Type)
 	// fmt.Printf("p.Payload:%s\n", recPacket.Payload)
-
+	// fmt.Print("hhhhhhhhhhh!!!")
+	// fmt.Println(recPacket.Head.Op_Type)
 	return recPacket
 
 }
@@ -85,7 +89,10 @@ func KeepListening(ClientIP string, ClientPort int) (receivedPacket Type.Packet)
 	// for{
 	conn, err := listener.Accept()
 	if err != nil {
-		log.Fatal(err)
+		ret := fmt.Sprintln(err)
+		receivedPacket = Type.Packet{Head: Type.PacketHead{P_Type: Type.Result, Op_Type: -1},
+			Payload: []byte(ret)}
+		return receivedPacket
 	}
 	// fmt.Println("remote address:", conn.RemoteAddr())
 	res, err := ioutil.ReadAll(conn)
